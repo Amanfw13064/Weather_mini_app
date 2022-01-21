@@ -1,0 +1,222 @@
+<html>
+    <head>
+        <script src="https://kit.fontawesome.com/ea5026738a.js" crossorigin="anonymous"></script>
+        <style>
+            body{
+                background-color: rgb(51, 55, 56);
+            }
+            #left{
+                width: 520px;
+                height: 400px;
+                border-radius: 8px;
+                background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1xPRf2naUnKyJv6ewQT-IQgLOXhkBdg66Nw&usqp=CAU");
+                background-size: cover;
+                margin-top: 40px;   
+            }
+            input{
+               width: 200px;
+               height: 30px;
+               font-size: 18px;
+               border-radius: 7px;
+               margin: 10px;
+               border: solid 1px gray;
+               padding: 10px;
+               box-sizing: border-box;
+           }
+           button{
+               width: 150px;
+               height: 30px;
+               background-color: black;
+               color: white;
+               font-size: 18px;
+               border-radius:20px ;
+               border: 0;
+               margin: 10px;
+           }
+            table{
+                color: white;
+                border-spacing: 20px;
+                font-size: 20px;
+                text-align: center;
+            }
+            .i{
+                font-size: 25px;
+                color: white;
+            }
+            .sun{
+                font-size: 150px;
+            color: white;
+            margin-left: 50px;
+            margin-top: 50px;
+            }
+            #forcast{
+               width: 70%;
+               display: flex;
+               height: 160px;
+               border: solid 1px;
+               margin-top: 50px;
+           }
+           #forcast>div{
+               width: 12%;
+               border:solid 1px;
+               height: 90%;
+               text-align: center;
+               border-radius:10px ;
+               margin: 5px;   
+               background-color: gray; 
+               color: white;
+               border: 0;
+           }
+           #Weather{
+            width: 250px;
+               height: 40px;
+               background-color: skyblue;
+               color: white;
+               font-size: 21px;
+               border-radius:10px ;
+               border: 0;
+               margin: 10px;
+           }
+           i{
+               color: rgb(255, 196, 0);
+               font-size: 40px;
+           }
+           p{
+               line-height: 8px;
+               font-size: 19px;
+           }
+           #main{
+               display: flex;
+           }
+        #right{
+              width: 500px;
+              height: 500px;
+              margin-left: 70px;
+              border: 0;
+        }
+        iframe{
+            border-radius:10px ;
+            border: none;
+        }
+        </style> 
+    </head>
+    <body>
+        <input type="text" id="city">
+        <button onclick="getWeather()">Search</button><br>
+        <button id="Weather">Get 7 Days Weathers</button>
+        <div id="main">
+        <div id="left">
+            <i class="fas fa-cloud-sun SUN"></i>
+            <table>
+                <tr>
+                    <th>Min-Temp</th><th>Max-Temp</th><th>WIND</th><th>HUMIDITY</th><th>PRESSURE</th>
+                </tr>
+                <tr>
+                    <td><i class="fas fa-temperature-low i"></i></td> <td><i class="fas fa-temperature-high i"></i></td><td><i class="fas fa-wind i"></i></td><td><i class="far fa-snowflake i"></i>  </td><td><i class="fas fa-smog i"></i>             </td>
+                </tr>
+                <tbody id="t">
+                </tbody>
+            </table>
+        </div>
+        <div id="right"></div>
+       </div>
+        <div id="forcast"></div>
+    </body>
+</html>
+<script>
+      
+    let key="8b9668d40a67b4a689bb0c6c6b7a675f";
+   function getWeather(){
+       let city=document.getElementById('city').value;
+       let iframe=document.createElement('iframe')
+       iframe.src=`https://www.google.com/maps/embed/v1/place?key=AIzaSyDOzqjk-7SyI3GcWaMRQDnk2aVDU3Wd8XY&q=${city}`;
+      iframe.width="100%";
+        iframe.height="100%";
+       let right=document.getElementById('right')
+       right.append(iframe)
+       let url=`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${key}&&units=metric`
+       fetch(url).then(function(res){
+         res.json().then(function(res){
+             console.log(res)
+            display(res)
+         })
+       })
+   }
+   var lat="";
+   var lot="";
+   function display(data)
+   {
+    document.getElementById('t').innerHTML=null;
+       var table=document.getElementById('t');
+       var tr=document.createElement('tr')
+       var div=document.getElementById('left')
+       var min=document.createElement('td');
+       let tl=Math.round(data.main.temp_min)
+       min.textContent=(tl-4)+"°C";
+       lat=data.coord.lat;
+       lon=data.coord.lon;
+       var max=document.createElement('td');
+       let tm=Math.round(data.main.temp_max)
+       max.textContent=tm+"°C";
+       var wind=document.createElement('td');
+       wind.textContent=data.wind.speed+"Km/h";
+       var humidity=document.createElement('td');
+       humidity.textContent=data.main.humidity+"%";
+       var pressure=document.createElement('td');
+       pressure.textContent=data.main.pressure+"mb";
+       tr.append(min,max,wind,humidity,pressure)
+       t.append(tr)
+   }
+   document.getElementById("Weather").addEventListener('click',function(){
+    console.log(lat,lon)
+    let url=`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=hourly&appid=${key}&&units=metric`;
+    fetch(url).then(function(res){
+        res.json().then(function(res){
+            console.log(res)
+            displayWea(res)
+        })
+    })
+    var i=0
+    let D=new Date();
+     let day=D.getDay()
+    function displayWea(data)
+
+    {
+        document.getElementById('forcast').innerHTML=null
+     var Days=["da","Mon","Tue","Wed","Thu","Fri","Sat","Sun"]   
+        var forcast=document.getElementById('forcast')
+        data.daily.map(function(item){
+            var div=document.createElement('div')
+            var cloud=item.clouds
+            var i=document.createElement('p')
+            if(cloud>55){
+                i.innerHTML=`<i class="fas fa-cloud"></i>`
+            }
+            else {
+                i.innerHTML=`<i class="fas fa-sun"></i>`
+            }
+            var da=document.createElement('p')
+            
+           if(day==8)
+           {
+               day=1
+           }
+          
+           da.textContent=Days[day]
+           console.log(Days[day]);
+           day++;
+            var tl=document.createElement('p')
+            var t=Math.round(item.temp.min)
+            tl.textContent=t+"°C";
+
+            var tm=document.createElement('p')
+            var m=Math.round(item.temp.max)
+            tm.textContent=m+"°C";
+            div.append(da,tm,tl,i);
+            forcast.append(div)
+  
+        })
+    }
+   })
+   
+</script>
